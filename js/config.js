@@ -2,16 +2,16 @@
  * Populate these after the contracts are deployed.
  * Add the address of the token and tokenFactory here.
  */
-exports const contract_defaults = {
+const contract_defaults = {
     tokenFactory: '',                 // Address of tokenFactory contract.
     token: '',                        // Address of token.
 };
 
-exports const deployment_defaults = {
+const deployment_defaults = {
     testnet: 'http://localhost:8545', // Change this to whichever testnet you want to use.
 };
 
-exports const token_defaults = {
+const token_defaults = {
     /**
      * The contract from which the current tokens are being cloned.
      * Should be 0 during deployment.
@@ -31,3 +31,9 @@ exports const token_defaults = {
      */
     transfersEnabled: true
 };
+
+module.exports = {
+    contract_defaults,
+    deployment_defaults,
+    token_defaults
+}
