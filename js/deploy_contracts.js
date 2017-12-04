@@ -14,7 +14,7 @@ const deploymentDefaults = require('./config').deployment_defaults;
  * tokenOptions: Options related to token deployment.
  * deploymentOptions: Testnet address.
  */
-function deploy(tokenOptions, deploymentOptions) {
+async function deploy(tokenOptions, deploymentOptions) {
     deploymentOptions = Object.assign(deploymentDefaults, deploymentOptions);
     tokenOptions = Object.assign(tokenDefaults, tokenOptions);
 
@@ -22,24 +22,18 @@ function deploy(tokenOptions, deploymentOptions) {
     // For Mist enabled browsers Web3.givenProvider will point to the current Ether network in use.
     let web3 = new Web3(Web3.givenProvider || deploymentOptions.testnet);
 
-    return new Promise((resolve, reject) => {
-        web3.eth.net.isListening().then((listening) => {
-            if(listening) {
-                MiniMeTokenFactory.new(web3).then((tokenFactory) => {
-                    const tokenFactoryAddress = tokenFactory.$address;
-                    MiniMeToken.new(web3, tokenFactoryAddress,
-                        tokenOptions.parentToken, tokenOptions.parentSnapShotBlock,
-                        tokenOptions.tokenName, tokenOptions.decimalUnits,
-                        tokenOptions.tokenSymbol, tokenOptions.transfersEnabled
-                    ).then((token) => {
-                        resolve([tokenFactoryAddress, token.$address]);
-                    })
-                });
-            } else {
-                console.error('Please check the Web3 providers');
-            }
-        });
-    });
+    const is_connected = await web3.eth.net.isListening();
+
+    if(is_connected) {
+        const tokenFactory = await MiniMeTokenFactory.new(web3);
+        const miniMeToken = await MiniMeToken.new(web3, tokenFactory.$address,
+            tokenOptions.parentToken, tokenOptions.parentSnapShotBlock,
+            tokenOptions.tokenName, tokenOptions.decimalUnits,
+            tokenOptions.tokenSymbol, tokenOptions.transfersEnabled
+        );
+
+        return [tokenFactory.$address, miniMeToken.$address];
+    }
 }
 
 exports.deploy = deploy;
