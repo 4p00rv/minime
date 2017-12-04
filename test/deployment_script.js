@@ -31,9 +31,8 @@ describe('MiniMeToken Deployment test', () => {
         deploymentOptions.testnet = 'http://127.0.0.1:8546';
     });
 
-    after((done) => {
+    after(() => {
         testrpc.close();
-        done();
     });
 
     it('Deploys contract to test net', async () => {
